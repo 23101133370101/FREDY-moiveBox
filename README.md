@@ -62,6 +62,37 @@ flask run
 
 Visit http://127.0.0.1:5000
 
+## Deploying to Render
+
+This repo includes `render.yaml` (Blueprint) and a `Procfile`. To deploy:
+
+1. Push this repo to GitHub (already done if you're reading this on GitHub).
+2. In the Render dashboard: **New +** → **Blueprint** → connect this GitHub
+   repo. Render reads `render.yaml` and provisions a free Postgres database
+   plus a web service automatically.
+3. Render will ask you to fill in the `ADMIN_PASSWORD` env var (marked
+   `sync: false` in `render.yaml` so it isn't committed to git). `SECRET_KEY`
+   is auto-generated.
+4. Deploy. The start command (`flask db upgrade && flask create-admin && gunicorn ...`)
+   runs migrations and creates the admin user on every deploy — safe to
+   re-run, it no-ops if the admin already exists.
+
+If you'd rather create the service manually instead of via Blueprint:
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `flask db upgrade && flask create-admin && gunicorn --bind 0.0.0.0:$PORT app:app`
+- **Environment variables:** `FLASK_APP=app.py`, `SECRET_KEY`, `ADMIN_USERNAME`,
+  `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `DATABASE_URL` (a Postgres connection
+  string — see caveat below).
+
+**Important limitation:** Render's free web services use an ephemeral
+filesystem — anything written to local disk (uploaded movie files, poster
+images, and a SQLite database if you don't configure Postgres) is wiped on
+every deploy and restart. Use the provisioned Postgres database for
+users/movies/downloads metadata (handled automatically by `render.yaml`), and
+be aware that **uploaded video/poster files will not survive a redeploy**
+unless you attach a paid persistent disk or move file storage to something
+like S3/Cloudinary.
+
 ## Project Structure
 
 ```

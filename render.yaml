@@ -1,0 +1,30 @@
+databases:
+  - name: moviehub-db
+    plan: free
+
+services:
+  - type: web
+    name: moviehub
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "flask db upgrade && flask create-admin && gunicorn --bind 0.0.0.0:$PORT app:app"
+    envVars:
+      - key: FLASK_APP
+        value: app.py
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_EMAIL
+        value: admin@moviehub.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: moviehub-db
+          property: connectionString
+    # Uploaded movie files and posters are written to local disk, which Render's
+    # free web services do NOT persist across deploys/restarts. Attach a paid
+    # persistent disk mounted at /opt/render/project/src/uploads (and one for
+    # static/posters) if uploads need to survive redeploys.

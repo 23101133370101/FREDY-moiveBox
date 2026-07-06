@@ -8,9 +8,12 @@ load_dotenv(os.path.join(basedir, ".env"))
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-key-not-for-production")
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL", "sqlite:///" + os.path.join(basedir, "moviehub.db")
-    )
+    _database_url = os.environ.get("DATABASE_URL", "sqlite:///" + os.path.join(basedir, "moviehub.db"))
+    if _database_url.startswith("postgres://"):
+        # SQLAlchemy 1.4+ requires the "postgresql://" scheme; hosts like Render
+        # still hand out "postgres://" URLs.
+        _database_url = _database_url.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = _database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     UPLOAD_FOLDER = os.path.join(basedir, os.environ.get("UPLOAD_FOLDER", "uploads"))
