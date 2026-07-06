@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Browse Movies - MovieHub{% endblock %}
+
+{% block content %}
+  <h1>Browse Movies</h1>
+
+  <form class="search-bar" method="get" action="{{ url_for('movies.index') }}">
+    <input type="text" name="q" placeholder="Search by title..." value="{{ search }}">
+    <select name="genre">
+      <option value="">All Genres</option>
+      {% for genre in genres %}
+        <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Search</button>
+  </form>
+
+  {% if movies %}
+    <div class="movie-grid">
+      {% for movie in movies %}
+        <a class="movie-card" href="{{ url_for('movies.movie_details', movie_id=movie.id) }}">
+          {% if movie.poster_filename %}
+            <img src="{{ url_for('static', filename='posters/' + movie.poster_filename) }}" alt="{{ movie.title }} poster">
+          {% else %}
+            <div class="poster-placeholder">No Poster</div>
+          {% endif %}
+          <div class="movie-card-body">
+            <h3>{{ movie.title }}</h3>
+            <p class="muted">{{ movie.year or "" }} {% if movie.genre %}&middot; {{ movie.genre }}{% endif %}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+    <div class="pagination">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('movies.index', page=pagination.prev_num, q=search, genre=selected_genre) }}">&laquo; Prev</a>
+      {% endif %}
+      <span>Page {{ pagination.page }} of {{ pagination.pages or 1 }}</span>
+      {% if pagination.has_next %}
+        <a href="{{ url_for('movies.index', page=pagination.next_num, q=search, genre=selected_genre) }}">Next &raquo;</a>
+      {% endif %}
+    </div>
+  {% else %}
+    <p class="muted">No movies found.</p>
+  {% endif %}
+{% endblock %}

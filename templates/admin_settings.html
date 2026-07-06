@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Account Settings - MovieHub{% endblock %}
+
+{% block content %}
+  <div class="form-card">
+    <h1>Account Settings</h1>
+    <p class="muted">Update your admin username and/or password. Leave a field blank to keep it unchanged.</p>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.current_password.label }}
+        {{ form.current_password(class_="form-control") }}
+        {% for error in form.current_password.errors %}<span class="error">{{ error }}</span>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.new_username.label }}
+        {{ form.new_username(class_="form-control", placeholder=current_user.username) }}
+        {% for error in form.new_username.errors %}<span class="error">{{ error }}</span>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.new_password.label }}
+        {{ form.new_password(class_="form-control") }}
+        {% for error in form.new_password.errors %}<span class="error">{{ error }}</span>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.confirm_new_password.label }}
+        {{ form.confirm_new_password(class_="form-control") }}
+        {% for error in form.confirm_new_password.errors %}<span class="error">{{ error }}</span>{% endfor %}
+      </div>
+
+      {{ form.submit(class_="btn-primary") }}
+    </form>
+  </div>
+{% endblock %}

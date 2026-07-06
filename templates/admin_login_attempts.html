@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Login Attempts - MovieHub{% endblock %}
+
+{% block content %}
+  <h1>🔐 Login Attempts</h1>
+  <p class="muted">Most recent 200 login attempts, successful and failed.</p>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Username</th>
+          <th>IP Address</th>
+          <th>Device</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attempt in attempts %}
+          <tr>
+            <td>{{ attempt.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ attempt.username }}</td>
+            <td>{{ attempt.ip_address or "-" }}</td>
+            <td class="truncate" title="{{ attempt.user_agent or '' }}">{{ attempt.user_agent or "-" }}</td>
+            <td>
+              {% if attempt.successful %}
+                <span class="badge badge-success">✅ Success</span>
+              {% else %}
+                <span class="badge badge-danger">❌ Failed</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="muted">No login attempts recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

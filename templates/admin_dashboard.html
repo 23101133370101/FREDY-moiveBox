@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - MovieHub{% endblock %}
+
+{% block content %}
+  <h1>Admin Dashboard</h1>
+  <p><a class="btn-primary" href="{{ url_for('admin.upload_movie') }}">+ Upload New Movie</a></p>
+
+  <div class="icon-grid">
+    <a href="{{ url_for('admin.users_info') }}" class="icon-card">
+      <span class="icon">🌐</span>
+      <span class="icon-title">User &amp; Device Info</span>
+      <span class="icon-sub">{{ stats.total_users }} registered users</span>
+    </a>
+    <a href="{{ url_for('admin.firewall') }}" class="icon-card">
+      <span class="icon">🛡️</span>
+      <span class="icon-title">Firewall</span>
+      <span class="icon-sub">{{ stats.blocked_users }} blocked</span>
+    </a>
+    <a href="{{ url_for('admin.login_attempts') }}" class="icon-card">
+      <span class="icon">🔐</span>
+      <span class="icon-title">Login Attempts</span>
+      <span class="icon-sub">{{ stats.failed_logins_today }} failed today</span>
+    </a>
+  </div>
+
+  <h2>Movies ({{ movies|length }})</h2>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Year</th>
+          <th>Uploaded By</th>
+          <th>Downloads</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for movie in movies %}
+          <tr>
+            <td><a href="{{ url_for('movies.movie_details', movie_id=movie.id) }}">{{ movie.title }}</a></td>
+            <td>{{ movie.genre or "-" }}</td>
+            <td>{{ movie.year or "-" }}</td>
+            <td>{{ movie.uploader.username }}</td>
+            <td>{{ movie.download_count }}</td>
+            <td>
+              <form method="post" action="{{ url_for('admin.delete_movie', movie_id=movie.id) }}"
+                    onsubmit="return confirm('Delete {{ movie.title }}? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

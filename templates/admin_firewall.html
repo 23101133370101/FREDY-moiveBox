@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Firewall - MovieHub{% endblock %}
+
+{% block content %}
+  <h1>🛡️ Firewall</h1>
+  <p class="muted">Block a user to immediately end their session and prevent them from logging in again.</p>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Last Login IP</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.last_login_ip or "-" }}</td>
+            <td>
+              {% if user.is_blocked %}
+                <span class="badge badge-danger">Blocked</span>
+              {% else %}
+                <span class="badge badge-success">Active</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if user.id == current_user.id %}
+                <span class="muted">You</span>
+              {% elif user.is_admin %}
+                <span class="muted">Admin</span>
+              {% else %}
+                <form method="post" action="{{ url_for('admin.toggle_block', user_id=user.id) }}"
+                      onsubmit="return confirm('{{ 'Unblock' if user.is_blocked else 'Block' }} {{ user.username }}?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="{{ 'btn-secondary' if user.is_blocked else 'btn-danger' }}">
+                    {{ "Unblock" if user.is_blocked else "Block" }}
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

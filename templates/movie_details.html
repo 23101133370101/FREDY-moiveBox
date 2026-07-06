@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }} - MovieHub{% endblock %}
+
+{% block content %}
+  <div class="movie-details">
+    <div class="movie-poster">
+      {% if movie.poster_filename %}
+        <img src="{{ url_for('static', filename='posters/' + movie.poster_filename) }}" alt="{{ movie.title }} poster">
+      {% else %}
+        <div class="poster-placeholder large">No Poster</div>
+      {% endif %}
+    </div>
+
+    <div class="movie-info">
+      <h1>{{ movie.title }} {% if movie.year %}<span class="muted">({{ movie.year }})</span>{% endif %}</h1>
+      {% if movie.genre %}<p class="genre-tag">{{ movie.genre }}</p>{% endif %}
+      <p>{{ movie.description or "No description available." }}</p>
+
+      <ul class="movie-meta">
+        <li>Uploaded by: {{ movie.uploader.username }}</li>
+        <li>Uploaded on: {{ movie.created_at.strftime('%Y-%m-%d') }}</li>
+        {% if movie.file_size_mb %}<li>File size: {{ movie.file_size_mb }} MB</li>{% endif %}
+        <li>Downloads: {{ movie.download_count }}</li>
+      </ul>
+
+      {% if current_user.is_authenticated %}
+        <a class="btn-primary" href="{{ url_for('movies.download_movie', movie_id=movie.id) }}">Download</a>
+      {% else %}
+        <a class="btn-primary" href="{{ url_for('auth.login', next=request.path) }}">Log in to Download</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

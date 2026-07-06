@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}My Downloads - MovieHub{% endblock %}
+
+{% block content %}
+  <h1>My Download History</h1>
+
+  {% if downloads %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Movie</th>
+          <th>Downloaded At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in downloads %}
+          <tr>
+            <td><a href="{{ url_for('movies.movie_details', movie_id=d.movie.id) }}">{{ d.movie.title }}</a></td>
+            <td>{{ d.downloaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">You haven't downloaded any movies yet.</p>
+  {% endif %}
+{% endblock %}

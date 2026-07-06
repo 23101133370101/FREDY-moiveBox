@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Login - MovieHub{% endblock %}
+
+{% block content %}
+  <div class="form-card">
+    <h1>Log In</h1>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(class_="form-control") }}
+        {% for error in form.username.errors %}<span class="error">{{ error }}</span>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(class_="form-control") }}
+        {% for error in form.password.errors %}<span class="error">{{ error }}</span>{% endfor %}
+      </div>
+
+      {{ form.submit(class_="btn-primary") }}
+    </form>
+    <p class="muted">Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up</a></p>
+  </div>
+{% endblock %}
